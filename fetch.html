@@ -1,0 +1,50 @@
+<html>
+<head>
+  <title>Callback hell example</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <script
+    src="https://code.jquery.com/jquery-3.4.0.min.js"
+    integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
+    crossorigin="anonymous">
+  </script>
+  <script type="text/javascript">
+   let base_url = "https://dpstogglapi1.davidinformatico.com/_/"; 
+   fetch(base_url+"auth/authenticate", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email: "demo@davidinformatico.com",
+            password: "demo"
+        })
+   })
+   .then(
+       (response)=>response.json()
+   )
+   .then(
+       (data) => {
+            return fetch(base_url+"users/me?fields=*", {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + data.data.token
+                }
+            })
+       }
+   )
+   .then(
+       (response)=>response.json()
+   )
+   .then(
+       (data)=>console.log(data)
+   )
+  </script>
+</head>
+<body>
+  
+</body>
+</html>
