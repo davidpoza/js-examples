@@ -9,8 +9,9 @@
     crossorigin="anonymous">
   </script>
   <script type="text/javascript">
+   let base_url = "https://dpstogglapi1.davidinformatico.com/_/"; 
    $.ajax({
-        url:'https://dpstogglapi1.davidinformatico.com/_/auth/authenticate',
+        url: base_url+'auth/authenticate',
         type: "POST",
         data:{
             "email" : 'demo@davidinformatico.com',
@@ -20,7 +21,7 @@
         success: (data,status)=>{
             let token = data.data.token;
             $.ajax({
-                url:'https://dpstogglapi1.davidinformatico.com/_/users/me?fields=*',
+                url: base_url+'users/me?fields=*',
                 type: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -31,7 +32,7 @@
                 success: (data,status)=>{
                     let user_id = data.data.id;
                     $.ajax({
-                        url:'https://dpstogglapi1.davidinformatico.com/_/items/tasks?fields=date&filter[user][eq]='+user_id+'&groups=date&sort=-date',
+                        url: base_url+'items/tasks?fields=date&filter[user][eq]='+user_id+'&groups=date&sort=-date',
                         type: "GET",
                         headers: {
                             "Accept": "application/json",
@@ -42,7 +43,7 @@
                         success: (data,status)=>{
                             let resultado = data.data.map(d=>{
                                 $.ajax({
-                                    url:'https://dpstogglapi1.davidinformatico.com/_/items/tasks?fields=*&filter[user][eq]='+user_id+'&filter[date][eq]='+d.date,
+                                    url: base_url+'items/tasks?fields=*&filter[user][eq]='+user_id+'&filter[date][eq]='+d.date,
                                     type: "GET",
                                     headers: {
                                         "Accept": "application/json",
