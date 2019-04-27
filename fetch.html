@@ -28,6 +28,7 @@
    )
    .then(
        (data) => {
+            if(data.error) throw new Error(data.error.message);
             token = data.data.token;
             return fetch(base_url+'users/me?fields=*', {
                 method: "GET",
@@ -45,7 +46,8 @@
    .then(
         (data) => {
             user_id = data.data.id;
-            return fetch(base_url+'itemss/tasks?fields=date&filter[user][eq]='+user_id+'&groups=date&sort=-date', {
+            if(data.error) throw new Error(data.error.message);
+            return fetch(base_url+'items/tasks?fields=date&filter[user][eq]='+user_id+'&groups=date&sort=-date', {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
@@ -60,6 +62,7 @@
    )
    .then(
         (data) => {
+            if(data.error) throw new Error(data.error.message);
             return data.data.map(d=>(
                 fetch(base_url+'items/tasks?fields=*&filter[user][eq]='+user_id+'&filter[date][eq]='+d.date, {
                     method: "GET",
@@ -71,8 +74,8 @@
                 })
             ));
         }
-   )
-   .then(
+   ) //en el anterior then se devuelve un array de promesas
+   .then( //queremos continuar solo cuando se cumplan todas ellas, para ello usamos Promise.all()
        (promises)=>Promise.all(promises)
    )
    .then(
@@ -82,7 +85,10 @@
        (promises)=>Promise.all(promises)
    )
    .then(
-       (data)=>data.map(d=>d.data)
+       (data)=>data.map(d=>{
+           if(d.error) throw new Error(d.error.message);
+           return(d.data);
+       })
    )
    .then(
        (data)=>console.log(data)
