@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Callback hell example</title>
+  <title>Chained fetch example</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
   <meta charset="UTF-8">
   <script
@@ -9,8 +9,10 @@
     crossorigin="anonymous">
   </script>
   <script type="text/javascript">
+   token = "";
+   user_id = "";
    let base_url = "https://dpstogglapi1.davidinformatico.com/_/"; 
-   fetch(base_url+"auth/authenticate", {
+   fetch(base_url+'auth/authenticate', {
         method: "POST",
         headers: {
             "Accept": "application/json",
@@ -26,12 +28,13 @@
    )
    .then(
        (data) => {
-            return fetch(base_url+"users/me?fields=*", {
+            token = data.data.token;
+            return fetch(base_url+'users/me?fields=*', {
                 method: "GET",
                 headers: {
                     "Accept": "application/json",
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer " + data.data.token
+                    "Authorization": "Bearer " + token
                 }
             })
        }
@@ -40,7 +43,52 @@
        (response)=>response.json()
    )
    .then(
+        (data) => {
+            user_id = data.data.id;
+            return fetch(base_url+'itemss/tasks?fields=date&filter[user][eq]='+user_id+'&groups=date&sort=-date', {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                }
+            })
+        }
+   )
+   .then(
+       (response)=>response.json()
+   )
+   .then(
+        (data) => {
+            return data.data.map(d=>(
+                fetch(base_url+'items/tasks?fields=*&filter[user][eq]='+user_id+'&filter[date][eq]='+d.date, {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    }
+                })
+            ));
+        }
+   )
+   .then(
+       (promises)=>Promise.all(promises)
+   )
+   .then(
+       (responses)=>responses.map(r=>r.json())
+   )
+   .then(
+       (promises)=>Promise.all(promises)
+   )
+   .then(
+       (data)=>data.map(d=>d.data)
+   )
+   .then(
        (data)=>console.log(data)
+   )
+   .catch(
+       (error)=>console.log(error)
    )
   </script>
 </head>
