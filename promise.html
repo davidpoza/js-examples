@@ -1,0 +1,26 @@
+<html>
+<head>
+  <title>Custom Promise</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <script type="text/javascript">
+    let promesa = new Promise((resuelve, rechazar) =>{
+    setTimeout(()=>{
+        let numero = Math.random();
+        if(numero >= 0.5) resuelve("Éxito");
+        rechazar("Error");
+    }, 2000);
+    });
+    promesa.then(
+        (data) => console.log(data)
+    )
+    .catch(
+        (data) => console.log(data)
+    )
+    console.log("inicio del proceso");
+  </script>
+</head>
+<body>
+  
+</body>
+</html>
